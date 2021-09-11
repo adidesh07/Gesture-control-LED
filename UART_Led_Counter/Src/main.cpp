@@ -5,7 +5,7 @@
   * @brief          : Main program body
   * 
   * Description    : This project will start a binary 4-bit counter using external LEDs connected
-  *                   on GPIO pins PD_7 - PD_11.
+  *                   on GPIO pins PD_8 - PD_11.
   *                   Serial communication is established via UART to monitor the count status.
   *                   Counter start / stop status is toggled if keyword "Toggle" is received via UART.
   * 
