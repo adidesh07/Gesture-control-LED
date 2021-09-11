@@ -3,6 +3,12 @@
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
+  * 
+  * Description    : This project will start a binary 4-bit counter using external LEDs connected
+  *                   on GPIO pins PD_7 - PD_11.
+  *                   Serial communication is established via UART to monitor the count status.
+  *                   Counter start / stop status is toggled if keyword "Toggle" is received via UART.
+  * 
   ******************************************************************************
   * @attention
   *
@@ -19,14 +25,15 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-#include <string.h>
-#include <iostream>
 
-using namespace std;
+#include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include <string.h>
+#include <iostream>
+using namespace std;
 
 /* USER CODE END Includes */
 
@@ -380,6 +387,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
@@ -387,6 +395,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   /* NOTE: This function should not be modified, when the callback is needed,
            the HAL_UART_RxCpltCallback could be implemented in the user file
    */
+
   char msg[50] = "Message received!\r\n";
   HAL_UART_Transmit(&huart2, (__uint8_t *)msg, strlen(msg), 10);
 
@@ -395,6 +404,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     STOP_COUNT ^= 1;
   }
 }
+
 /* USER CODE END 4 */
 
 /**
