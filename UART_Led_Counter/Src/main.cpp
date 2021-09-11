@@ -33,6 +33,15 @@ using namespace std;
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+/* 
+External LEDs -> GPIO Port_D  8, 9, 10, 11
+*/
+
+#define LED0 11
+#define LED1 10
+#define LED2 8
+#define LED3 9
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -50,6 +59,9 @@ DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 
+char rxData[50];
+int STOP_COUNT = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,23 +71,14 @@ static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-#define LED0 11
-#define LED1 10
-#define LED2 8
-#define LED3 9
-
-char rxData[50];
-int STOP_COUNT = 0;
-
 void setPortDOutMode(int pinNum);
 void sendPortDOutData(int pinNum, bool highSig);
 int getPinNum(int LEDNum);
 
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 
 class Counter
 {
@@ -134,7 +137,7 @@ public:
     {
       if (STOP_COUNT)
       {
-      	  break;
+        break;
       }
 
       int num = countVal;
@@ -144,8 +147,9 @@ public:
       }
 
       char number[10];
-      sprintf(number, "%d\r\n", num);
+      sprintf(number, "Current Number: %d\r\n", num);
       HAL_UART_Transmit(&huart2, (__uint8_t *)number, strlen(number), 10);
+
       writeLED(num);
       HAL_Delay(1000);
     }
@@ -162,10 +166,6 @@ private:
     }
   }
 };
-
-/* 
-External LEDs -> GPIO Port_D  8, 9, 10, 11
-*/
 
 int getPinNum(int LEDNum)
 {
@@ -242,10 +242,10 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-	// Connection Success Message
-	char txdata[50] = "Connection Successful!\r\n";
-	HAL_UART_Transmit(&huart2, (uint8_t*)txdata, strlen(txdata), 10);
-	HAL_UART_Receive_DMA(&huart2, (uint8_t* )rxData, 6);
+  // Connection Success Message
+  char txdata[50] = "Connection Successful!\r\n";
+  HAL_UART_Transmit(&huart2, (uint8_t *)txdata, strlen(txdata), 10);
+  HAL_UART_Receive_DMA(&huart2, (uint8_t *)rxData, 6);
 
   // Enable clock for bus of GPIOD, i.e, AHB1
   // RCC base -> 40023800 + offset 30
@@ -267,7 +267,8 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-    if (!STOP_COUNT){
+    if (!STOP_COUNT)
+    {
       c1.startCounter();
     }
 
@@ -307,8 +308,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -350,7 +350,6 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
@@ -366,7 +365,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-
 }
 
 /**
@@ -379,7 +377,6 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -391,11 +388,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
            the HAL_UART_RxCpltCallback could be implemented in the user file
    */
   char msg[50] = "Message received!\r\n";
-  HAL_UART_Transmit(&huart2, (__uint8_t*) msg, strlen(msg), 10);
+  HAL_UART_Transmit(&huart2, (__uint8_t *)msg, strlen(msg), 10);
 
   if (strcmp(rxData, "Toggle") == 0)
   {
-	  STOP_COUNT ^= 1;
+    STOP_COUNT ^= 1;
   }
 }
 /* USER CODE END 4 */
@@ -415,7 +412,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
