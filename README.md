@@ -1,6 +1,6 @@
-# UART-serial-monitor
+# UART-control-LED
 
-###### Hand gesture control to toggle state of 4-bit counter via serial communication using STM32F407 board.
+#### Hand gesture control to toggle state of 4-bit counter via serial communication using STM32F407 board.
 
 
 ## Working
