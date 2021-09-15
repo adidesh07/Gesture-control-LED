@@ -3,7 +3,7 @@
 ###### Hand gesture control to toggle state of 4-bit counter via serial communication using STM32F407 board.
 
 
-##Working
+## Working
 This project uses OpenCV and the MediaPipe library for hand tracking.
 Gesture control is achieved by calculating the real-time distance between tip of index finger and tip of thumb of user.
 
