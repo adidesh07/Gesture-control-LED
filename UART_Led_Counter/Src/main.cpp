@@ -3,12 +3,6 @@
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
-  * 
-  * Description    : This project will start a binary 4-bit counter using external LEDs connected
-  *                   on GPIO pins PD_8 - PD_11.
-  *                   Serial communication is established via UART to monitor the count status.
-  *                   Counter start / stop status is toggled if keyword "Toggle" is received via UART.
-  * 
   ******************************************************************************
   * @attention
   *
@@ -25,15 +19,14 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-
 #include "main.h"
+#include <string.h>
+#include <iostream>
+
+using namespace std;
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
-#include <string.h>
-#include <iostream>
-using namespace std;
 
 /* USER CODE END Includes */
 
@@ -144,7 +137,7 @@ public:
     {
       if (STOP_COUNT)
       {
-        break;
+      	  break;
       }
 
       int num = countVal;
@@ -153,12 +146,11 @@ public:
         num *= -1;
       }
 
-      char number[10];
-      sprintf(number, "Current Number: %d\r\n", num);
+      char number[30];
+      sprintf(number, "%d\r\n", num);
       HAL_UART_Transmit(&huart2, (__uint8_t *)number, strlen(number), 10);
-
       writeLED(num);
-      HAL_Delay(1000);
+      HAL_Delay(200);
     }
   }
 
@@ -173,6 +165,7 @@ private:
     }
   }
 };
+
 
 int getPinNum(int LEDNum)
 {
@@ -249,10 +242,10 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  // Connection Success Message
-  char txdata[50] = "Connection Successful!\r\n";
-  HAL_UART_Transmit(&huart2, (uint8_t *)txdata, strlen(txdata), 10);
-  HAL_UART_Receive_DMA(&huart2, (uint8_t *)rxData, 6);
+	// Connection Success Message
+	char txdata[50] = "Connection Successful!\r\n";
+	HAL_UART_Transmit(&huart2, (uint8_t*)txdata, strlen(txdata), 10);
+	HAL_UART_Receive_DMA(&huart2, (uint8_t* )rxData, 6);
 
   // Enable clock for bus of GPIOD, i.e, AHB1
   // RCC base -> 40023800 + offset 30
@@ -266,6 +259,9 @@ int main(void)
   setPortDOutMode(LED3);
   Counter c1;
 
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -274,8 +270,9 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-    if (!STOP_COUNT)
-    {
+
+  if (!STOP_COUNT){
+      //c1.startCounter();
       c1.startCounter();
     }
 
@@ -315,7 +312,8 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -357,6 +355,7 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
 }
 
 /**
@@ -372,6 +371,7 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+
 }
 
 /**
@@ -384,10 +384,10 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
 }
 
 /* USER CODE BEGIN 4 */
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
@@ -395,16 +395,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   /* NOTE: This function should not be modified, when the callback is needed,
            the HAL_UART_RxCpltCallback could be implemented in the user file
    */
-
   char msg[50] = "Message received!\r\n";
-  HAL_UART_Transmit(&huart2, (__uint8_t *)msg, strlen(msg), 10);
+  HAL_UART_Transmit(&huart2, (__uint8_t*) msg, strlen(msg), 10);
+  HAL_UART_Transmit(&huart2, (__uint8_t*) rxData, strlen(rxData), 10);
 
   if (strcmp(rxData, "Toggle") == 0)
   {
-    STOP_COUNT ^= 1;
+	  STOP_COUNT ^= 1;
   }
 }
-
 /* USER CODE END 4 */
 
 /**
@@ -422,7 +421,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
